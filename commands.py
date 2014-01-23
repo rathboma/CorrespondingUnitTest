@@ -4,24 +4,35 @@
 # Author: Daniel Imhoff
 #
 
-import os, errno
-import sublime, sublime_plugin
+import os
+import sublime
+import sublime_plugin
+
 
 class CorrespondingunittestOpenCommand(sublime_plugin.WindowCommand):
     def __init__(self, window):
         super().__init__(window)
-        self.tests_path = '/tests/php'
+        self.settings = sublime.load_settings("CorrespondingUnitTest.sublime-settings")
+        self.tests_path = self.settings.get("tests_base", "tests/php")
 
     def run(self, **args):
         project_path = self.window.project_data()['folders'][0]['path']
         file_path = self.window.active_view().file_name()
-        if file_path.startswith(project_path):
-            test_path = project_path + self.tests_path + file_path[len(project_path):-4] + 'Test.php'
-            try:
-                test_dir_path = os.path.dirname(test_path)
-                os.makedirs(test_dir_path)
-            except OSError as exc:
-                if exc.errno == errno.EEXIST and os.path.isdir(test_dir_path):
-                    pass
-                else: raise
-            self.window.open_file(test_path)
+
+        if not file_path.startswith(project_path):
+            print("file {f} not in project path {p}".format(file_path, project_path))
+            return
+        self.message = "foo"
+        test_path_one = os.path.join(project_path, self.tests_path, file_path[len(project_path) + 1:-4] + "Test.php")
+        test_path_two = os.path.join(project_path, self.tests_path, file_path[len(project_path) + 1:-4] + "_Test.php")
+
+        test_path = test_path_one
+        if os.path.exists(test_path_two) and not os.path.exists(test_path_one):
+            test_path = test_path_two
+
+        test_dir_path = os.path.dirname(test_path)
+        if os.path.exists(test_dir_path):
+            pass
+        else:
+            os.makedirs(test_dir_path)
+        self.window.open_file(test_path)
