@@ -23,8 +23,9 @@ class CorrespondingunittestOpenCommand(sublime_plugin.WindowCommand):
             print("file {f} not in project path {p}".format(file_path, project_path))
             return
         self.message = "foo"
-        test_path_one = os.path.join(project_path, self.tests_path, file_path[len(project_path) + 1:-4] + "Test.php")
-        test_path_two = os.path.join(project_path, self.tests_path, file_path[len(project_path) + 1:-4] + "_Test.php")
+        file_excluding_project = file_path.replace(project_path + "/", "")
+        test_path_one = os.path.join(project_path, self.tests_path, file_excluding_project[:-4] + "Test.php")
+        test_path_two = os.path.join(project_path, self.tests_path, file_excluding_project[:-4] + "_Test.php")
 
         test_path = test_path_one
         if os.path.exists(test_path_two) and not os.path.exists(test_path_one):
