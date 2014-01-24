@@ -22,7 +22,7 @@ class CorrespondingunittestOpenCommand(sublime_plugin.WindowCommand):
         if not file_path.startswith(project_path):
             print("file {f} not in project path {p}".format(file_path, project_path))
             return
-        self.message = "foo"
+
         file_excluding_project = file_path.replace(project_path + "/", "")
         test_path_one = os.path.join(project_path, self.tests_path, file_excluding_project[:-4] + "Test.php")
         test_path_two = os.path.join(project_path, self.tests_path, file_excluding_project[:-4] + "_Test.php")
